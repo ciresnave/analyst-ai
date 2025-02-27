@@ -1,0 +1,12 @@
+[package]
+    edition = "2021"
+    name    = "requirements-ai"
+    version = "0.1.0"
+
+[dependencies]
+    axum       = "0.8"                                    # Web framework
+    futures    = "0.3"                                    # Async utilities
+    serde      = { version = "1", features = ["derive"] } # Serialization
+    serde_json = "1"                                      # JSON handling
+    tokio      = { version = "1", features = ["full"] }   # Async runtime
+    tower-http = { version = "0.6", features = ["fs"] }   # Static file serving

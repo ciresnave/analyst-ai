@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Requirements AI</title>
+        <style>
+            body {
+                display: flex;
+                font-family: Arial, sans-serif;
+            }
+
+            #chat {
+                width: 50%;
+                padding: 10px;
+            }
+
+            #requirements {
+                width: 50%;
+                padding: 10px;
+                border-left: 1px solid #ccc;
+            }
+
+            #messages {
+                height: 400px;
+                overflow-y: scroll;
+                border: 1px solid #ccc;
+                padding: 10px;
+            }
+
+            #req-text {
+                white-space: pre-wrap;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="chat">
+            <h2>Chat</h2>
+            <div id="messages"></div>
+            <input id="input" type="text" style="width: 80%;" />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+        <div id="requirements">
+            <h2>Requirements Document</h2>
+            <div id="req-text"></div>
+        </div>
+
+        <script>
+            const ws = new WebSocket("ws://127.0.0.1:3000"); // Placeholder; we’ll use HTTP for simplicity
+            const messages = document.getElementById("messages");
+            const input = document.getElementById("input");
+            const reqText = document.getElementById("req-text");
+
+            async function updateRequirements() {
+                const res = await fetch("/requirements");
+                reqText.textContent = await res.text();
+            }
+
+            async function sendMessage() {
+                const msg = input.value;
+                if (!msg) return;
+                messages.innerHTML += `<p><b>You:</b> ${msg}</p>`;
+                input.value = "";
+
+                const res = await fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: msg }),
+                });
+                const data = await res.json();
+                messages.innerHTML += `<p><b>AI:</b> ${data.message}</p>`;
+                updateRequirements();
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            input.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") sendMessage();
+            });
+
+            // Initial load
+            updateRequirements();
+        </script>
+    </body>
+
+</html>
